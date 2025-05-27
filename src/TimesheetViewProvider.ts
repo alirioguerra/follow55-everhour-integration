@@ -52,28 +52,28 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage(async message => {
             switch (message.command) {
                 case 'refresh':
-                await this.loadData();
-                break;
+                    await this.loadData();
+                    break;
                 case 'selectProject':
-                await this.selectProject(message.projectId);
-                break;
+                    await this.selectProject(message.projectId);
+                    break;
                 case 'startTimer':
-                await this.startTimer(message.taskId);
-                break;
+                    await this.startTimer(message.taskId);
+                    break;
                 case 'stopTimer':
-                await this.stopTimer();
-                break;
+                    await this.stopTimer();
+                    break;
                 case 'logTime':
-                await this.logTime(message.taskId, message.time);
-                break;
+                    await this.logTime(message.taskId, message.time);
+                    break;
                 case 'changeStatusFilter':
-                this._taskStatusFilter = message.status;
-                this.updateView();
-                break;
+                    this._taskStatusFilter = message.status;
+                    this.updateView();
+                    break;
                 case 'searchTasks':
-                this._searchTerm = message.query.trim().toLowerCase();
-                this.updateView();
-                break;
+                    this._searchTerm = message.query.trim().toLowerCase();
+                    this.updateView();
+                    break;
             }
         });
         
@@ -107,10 +107,10 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
                 this.updateView();
             } else {
                 const error = await response.json();
-                vscode.window.showErrorMessage(`Erro ao buscar projetos: ${error.message}`);
+                vscode.window.showErrorMessage(`Error fetching projects: ${error.message}`);
             }
         } catch (error) {
-            vscode.window.showErrorMessage('Falha na conexão com o Everhour');
+            vscode.window.showErrorMessage('Failed to connect to Everhour');
             console.error(error);
         }
     }
@@ -123,7 +123,7 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
     private async fetchTasks(projectId: string) {
         const token = this.context.globalState.get('everhourToken');
         if (!token || !projectId) {
-            vscode.window.showErrorMessage('Token ou ID do projeto não configurado');
+            vscode.window.showErrorMessage('Token or project ID not configured');
             return;
         }
         
@@ -137,14 +137,14 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
             
             if (!response.ok) {
                 const error = await response.json().catch(() => ({}));
-                throw new Error(error.message || `Erro HTTP ${response.status}`);
+                throw new Error(error.message || `HTTP error ${response.status}`);
             }
             
             const data: EverhourTask[] = await response.json();
             
             this._tasks = data.map(task => ({
                 id: task.id,
-                name: task.name || 'Tarefa sem nome',
+                name: task.name || 'Unnamed task',
                 status: task.status || 'open',
                 projects: task.projects || [],
                 time: {
@@ -157,8 +157,8 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
             
             this.updateView();
         } catch (error: any) {
-            console.error('Erro ao buscar tarefas:', error);
-            vscode.window.showErrorMessage(`Falha: ${error.message}`);
+            console.error('Error fetching tasks:', error);
+            vscode.window.showErrorMessage(`Failed: ${error.message}`);
             this._tasks = [];
             this.updateView();
         }
@@ -191,7 +191,7 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
                 }
             }
         } catch (error) {
-            console.error('Erro ao verificar timer atual:', error);
+            console.error('Error checking current timer:', error);
         }
     }
     
@@ -217,13 +217,13 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
                     startTime: Date.now()
                 };
                 this.updateView();
-                vscode.window.showInformationMessage(`Timer iniciado para tarefa ${this.getTaskName(taskId)}`);
+                vscode.window.showInformationMessage(`Timer started for task ${this.getTaskName(taskId)}`);
             } else {
                 const error = await response.json();
-                vscode.window.showErrorMessage(`Erro ao iniciar timer: ${error.message}`);
+                vscode.window.showErrorMessage(`Error starting timer: ${error.message}`);
             }
         } catch (error) {
-            vscode.window.showErrorMessage('Erro ao iniciar timer');
+            vscode.window.showErrorMessage('Error starting timer');
             console.error(error);
         }
     }
@@ -242,22 +242,22 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
             
             if (response.ok) {
                 const elapsedMinutes = this._currentTimer.startTime 
-                ? Math.floor((Date.now() - this._currentTimer.startTime) / 60000)
-                : 0;
+                    ? Math.floor((Date.now() - this._currentTimer.startTime) / 60000)
+                    : 0;
                 
                 const taskName = this.getTaskName(this._currentTimer.taskId);
                 this._currentTimer = {};
                 this.updateView();
                 
                 vscode.window.showInformationMessage(
-                    `Timer parado para ${taskName}. Tempo decorrido: ${elapsedMinutes} minutos`
+                    `Timer stopped for ${taskName}. Elapsed time: ${elapsedMinutes} minutes`
                 );
             } else {
                 const error = await response.json();
-                vscode.window.showErrorMessage(`Erro ao parar timer: ${error.message}`);
+                vscode.window.showErrorMessage(`Error stopping timer: ${error.message}`);
             }
         } catch (error) {
-            vscode.window.showErrorMessage('Erro ao parar timer');
+            vscode.window.showErrorMessage('Error stopping timer');
             console.error(error);
         }
     }
@@ -280,22 +280,22 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
             });
             
             if (response.ok) {
-                vscode.window.showInformationMessage('Tempo registrado com sucesso!');
+                vscode.window.showInformationMessage('Time logged successfully!');
                 if (this._selectedProjectId) {
                     await this.fetchTasks(this._selectedProjectId);
                 }
             } else {
                 const error = await response.json();
-                throw new Error(error.message || 'Erro ao registrar tempo');
+                throw new Error(error.message || 'Error logging time');
             }
         } catch (error: any) {
-            vscode.window.showErrorMessage(`Falha: ${error.message}`);
+            vscode.window.showErrorMessage(`Failed: ${error.message}`);
         }
     }
     
     private getTaskName(taskId: string): string {
         const task = this._tasks.find(t => t.id === taskId);
-        return task ? task.name : 'Tarefa desconhecida';
+        return task ? task.name : 'Unknown task';
     }
     
     private formatTime(seconds?: number): string {
@@ -312,17 +312,17 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
         
         const statusOptions = ['all', 'open', 'closed', 'in_progress', 'completed'];
         const statusLabels: Record<string, string> = {
-            all: 'Todos',
-            open: 'Aberto',
-            closed: 'Fechado',
-            in_progress: 'Em Progresso',
-            completed: 'Concluído',
+            all: 'All',
+            open: 'Open',
+            closed: 'Closed',
+            in_progress: 'In Progress',
+            completed: 'Completed',
         };
         
-        // Projetos HTML
+        // Projects HTML
         const projectsHtml = this._projects
-        .map(p => `<option value="${p.id}" ${p.id === this._selectedProjectId ? 'selected' : ''}>${p.name}</option>`)
-        .join('\n');
+            .map(p => `<option value="${p.id}" ${p.id === this._selectedProjectId ? 'selected' : ''}>${p.name}</option>`)
+            .join('\n');
         
         // Status filter HTML
         const statusFilterHtml = `
@@ -331,46 +331,71 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
             </select>
         `;
         
-        // Filtrar tarefas por status
+        // Filter tasks by status
         const filteredTasks = this._taskStatusFilter === 'all'
-        ? this._tasks
-        : this._tasks.filter(task => task.status === this._taskStatusFilter);
+            ? this._tasks
+            : this._tasks.filter(task => task.status === this._taskStatusFilter);
         
-        // Filtrar tarefas por busca (nome)
+        // Filter tasks by search term
         const searchTerm = this._searchTerm;
         const searchFilteredTasks = searchTerm
-        ? filteredTasks.filter(task => task.name.toLowerCase().includes(searchTerm))
-        : filteredTasks;
+            ? filteredTasks.filter(task => task.name.toLowerCase().includes(searchTerm))
+            : filteredTasks;
         
+        // Active task section
+        const activeTask = this._currentTimer.taskId 
+            ? this._tasks.find(t => t.id === this._currentTimer.taskId)
+            : null;
+        
+        const activeTaskHtml = activeTask ? `
+            <div class="active-task-container">
+                <div class="active-task-header">ACTIVE TASK</div>
+                <div class="active-task">
+                    <div class="task-name">${activeTask.name}</div>
+                    <div class="active-task-time">
+                        ${this.formatTime(activeTask.time?.total)}
+                        ${this._currentTimer.startTime 
+                            ? ` (${Math.floor((Date.now() - this._currentTimer.startTime) / 60000)}m)`
+                            : ''}
+                    </div>
+                    <button class="activity-status pause" onclick="stopTimer()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 5h4v14H6zm8 0h4v14h-4z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        ` : '';
+        
+        // Tasks list HTML
         const tasksHtml = searchFilteredTasks.length > 0
-        ? searchFilteredTasks.map(task => {
-            const isRunning = this._currentTimer.taskId === task.id;
-            return `
-                    <div class="task">
+            ? searchFilteredTasks.map(task => {
+                const isRunning = this._currentTimer.taskId === task.id;
+                return `
+                    <div class="task ${isRunning ? 'active' : ''}">
                         <div class="task-name">${task.name}</div>
                         <div>${this.formatTime(task.time?.total)}</div>
                         ${isRunning
-            ? `<button class="activity-status pause" onclick="stopTimer()">
+                            ? `<button class="activity-status pause" onclick="stopTimer()">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M6 5h4v14H6zm8 0h4v14h-4z"/>
                                 </svg>
                                 </button>`
-            : `<button class="activity-status play" onclick="startTimer('${task.id}')">
+                            : `<button class="activity-status play" onclick="startTimer('${task.id}')">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M8 5v14l11-7z"/>
                                 </svg>
-                            </button>`
-        }
+                            </button>`}
                     </div>
                 `;
-    }).join('')
-    : `<div class="no-tasks">Nenhuma tarefa encontrada com este filtro</div>`;
-    
-    const searchValueEscaped = searchTerm.replace(/"/g, '&quot;');
-    
-    return `
+            }).join('')
+            : `<div class="no-tasks">No tasks found with this filter</div>`;
+        
+        const searchValueEscaped = searchTerm.replace(/"/g, '&quot;');
+        
+        return `
             <!DOCTYPE html>
-            <html lang="pt-BR">
+            <html lang="en">
             <head>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -405,6 +430,11 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
                         gap: 8px;
                         border-bottom: 1px solid var(--vscode-editorGroup-border);
                     }
+                    .task.active {
+                        background-color: var(--vscode-editor-selectionHighlightBackground);
+                        border-left: 3px solid var(--vscode-button-background);
+                        padding-left: 8px;
+                    }
                     .task-name {
                         flex: 1 1 80px;
                         min-width: 0;
@@ -424,7 +454,7 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
                         border-radius: 50%;
                         transition: background-color 0.2s ease;
                     }
-                        .activity-status.play {
+                    .activity-status.play {
                         background-color: green;
                     }
                     .activity-status.play:hover {
@@ -443,21 +473,52 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
                         fill: currentColor;
                     }
                     button {
-                        background-color: rgb(0, 27, 45);
+                        background-color: var(--vscode-button-background);
+                        color: var(--vscode-button-foreground);
                         border: none;
                         border-radius: 3px;
                         padding: 4px 8px;
                         cursor: pointer;
-                        color: var(--vscode-button-background);
                     }
                     button:hover {
                         background-color: var(--vscode-button-hoverBackground);
-                        color: black;
                     }
                     .no-tasks {
                         padding: 12px;
                         color: var(--vscode-descriptionForeground);
                         font-style: italic;
+                    }
+                    .active-task-container {
+                        background-color: var(--vscode-editor-selectionBackground);
+                        border-radius: 4px;
+                        margin-bottom: 12px;
+                        padding: 8px;
+                        animation: pulse 2s infinite;
+                    }
+                    @keyframes pulse {
+                        0% { opacity: 1; }
+                        50% { opacity: 0.8; }
+                        100% { opacity: 1; }
+                    }
+                    .active-task-header {
+                        font-size: 0.8em;
+                        font-weight: bold;
+                        margin-bottom: 4px;
+                        color: var(--vscode-foreground);
+                        opacity: 0.8;
+                    }
+                    .active-task {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                    }
+                    .active-task .task-name {
+                        font-weight: bold;
+                        flex-grow: 1;
+                    }
+                    .active-task-time {
+                        font-family: monospace;
+                        font-size: 0.9em;
                     }
                 </style>
             </head>
@@ -466,7 +527,7 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
                     <input 
                         type="search" 
                         id="taskSearch" 
-                        placeholder="Buscar tarefas..." 
+                        placeholder="Search tasks..." 
                         value="${searchValueEscaped}"
                         oninput="onSearchInput(this.value)"
                     />
@@ -474,32 +535,36 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
                         ${projectsHtml}
                     </select>
                     ${statusFilterHtml}
-                    <button onclick="refresh()">Atualizar</button>
+                    <button onclick="refresh()">Refresh</button>
                 </div>
+                
+                ${activeTaskHtml}
+                
                 <div id="tasks">${tasksHtml}</div>
+                
                 <script>
                     const vscode = acquireVsCodeApi();
-    
+        
                     function refresh() {
                         vscode.postMessage({ command: 'refresh' });
                     }
-    
+        
                     function selectProject(projectId) {
                         vscode.postMessage({ command: 'selectProject', projectId });
                     }
-    
+        
                     function startTimer(taskId) {
                         vscode.postMessage({ command: 'startTimer', taskId });
                     }
-    
+        
                     function stopTimer() {
                         vscode.postMessage({ command: 'stopTimer' });
                     }
-    
+        
                     function changeStatusFilter(status) {
                         vscode.postMessage({ command: 'changeStatusFilter', status });
                     }
-    
+        
                     let searchTimeout;
                     function onSearchInput(value) {
                         clearTimeout(searchTimeout);
@@ -507,15 +572,33 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
                             vscode.postMessage({ command: 'searchTasks', query: value });
                         }, 300);
                     }
+        
+                    function updateActiveTimer() {
+                        const activeTaskElement = document.querySelector('.active-task-time');
+                        if (activeTaskElement) {
+                            const startTime = ${this._currentTimer.startTime || 0};
+                            if (startTime) {
+                                const update = () => {
+                                    const minutes = Math.floor((Date.now() - startTime) / 60000);
+                                    activeTaskElement.textContent = \`${this.formatTime(activeTask?.time?.total || 0)} (\${minutes}m)\`;
+                                };
+                                update();
+                                setInterval(update, 60000); // Update every minute
+                            }
+                        }
+                    }
+        
+                    // Initialize when page loads
+                    window.addEventListener('load', updateActiveTimer);
                 </script>
             </body>
             </html>
         `;
-}
-
-public updateView() {
-    if (this._view) {
-        this._view.webview.html = this._getHtmlForWebview(this._view.webview);
     }
-}
+
+    public updateView() {
+        if (this._view) {
+            this._view.webview.html = this._getHtmlForWebview(this._view.webview);
+        }
+    }
 }
