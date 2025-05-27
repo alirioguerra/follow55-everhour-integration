@@ -45,7 +45,7 @@ Extensão para rastreamento de tempo direto do VS Code, integrado com a platafor
 
 ## 📅 Histórico de Versões
 
-### 0.0.2 (Atual)
+### 0.0.3 (Atual)
 - Destaque visual melhorado para tarefa ativa
 - Suporte a filtros combinados
 - Correção de sincronização em projetos grandes
