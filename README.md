@@ -2,8 +2,6 @@
 
 Extensão para rastreamento de tempo direto do VS Code, integrado com a plataforma Everhour.
 
-![Demonstração da extensão](images/demo.gif)
-
 ## ✨ Funcionalidades
 
 - **Controle de tempo integrado**:
