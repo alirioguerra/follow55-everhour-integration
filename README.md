@@ -56,7 +56,7 @@ Extensão para rastreamento de tempo direto do VS Code, integrado com a platafor
 ## 🤝 Como Contribuir
 
 Encontrou um bug ou tem uma sugestão? 
-1. Abra uma [issue no GitHub](https://github.com/seuuser/suarepo/issues)
+1. Abra uma [issue no GitHub](https://github.com/alirioguerra/follow55-everhour-integration/issues)
 2. Descreva detalhadamente o caso
 3. Anexe prints se possível
 
