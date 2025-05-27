@@ -1,7 +1,7 @@
 {
   "name": "follow55-everhour-integration",
   "displayName": "Follow55 - Everhour integration",
-  "description": "",
+  "description": "A extensão perfeita para devs que usam Everhour e querem registrar horas direto do VS Code com máximo foco e mínimo esforço.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.100.0"
