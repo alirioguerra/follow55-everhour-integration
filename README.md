@@ -43,17 +43,6 @@ Extensão para rastreamento de tempo direto do VS Code, integrado com a platafor
 - Clique duplo em uma tarefa para ver detalhes
 - Use a barra de busca para filtrar tarefas rapidamente
 
-## 📅 Histórico de Versões
-
-### 0.0.3 (Atual)
-- Destaque visual melhorado para tarefa ativa
-- Suporte a filtros combinados
-- Correção de sincronização em projetos grandes
-- Ajuste no ícone da extensão para melhor visualização
-
-### 0.0.1
-- Versão inicial lançada
-
 ## 🤝 Como Contribuir
 
 Encontrou um bug ou tem uma sugestão? 
@@ -63,7 +52,11 @@ Encontrou um bug ou tem uma sugestão?
 
 ## 📜 Licença
 
-Distribuído sob licença MIT. Veja o arquivo `LICENSE` para mais informações.
+Distribuído sob licença MIT. Veja o arquivo [`LICENSE`](./LICENSE) para mais informações.
+
+## 📘 Histórico de mudanças
+
+Confira todas as alterações e melhorias no [`CHANGELOG.md`](./CHANGELOG.md)
 
 ---
 
