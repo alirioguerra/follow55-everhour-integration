@@ -471,7 +471,7 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
         `;
     }
 
-    private updateView() {
+    public updateView() {
         if (this._view) {
             this._view.webview.html = this._getHtmlForWebview(this._view.webview);
         }
