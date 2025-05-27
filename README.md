@@ -1,71 +1,71 @@
-# follow55-everhour-integration README
+# Integração Everhour para VS Code ⌚
 
-This is the README for your extension "follow55-everhour-integration". After writing up a brief description, we recommend including the following sections.
+Extensão para rastreamento de tempo direto do VS Code, integrado com a plataforma Everhour.
 
-## Features
+![Demonstração da extensão](images/demo.gif)
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## ✨ Funcionalidades
 
-For example if there is an image subfolder under your extension project workspace:
+- **Controle de tempo integrado**:
+  - ▶️ Iniciar timer com um clique
+  - ⏸️ Pausar/parar timer
+  - 📊 Visualizar tempo acumulado
 
-\!\[feature X\]\(images/feature-x.png\)
+- **Visibilidade total**:
+  - 🔍 Filtros por projeto e status
+  - 🎯 Tarefa ativa destacada
+  - ⏱️ Contador em tempo real
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- **Sincronização perfeita**:
+  - 🔄 Dados sempre atualizados
+  - 📈 Histórico de tempo registrado
 
-## Requirements
+## 📋 Requisitos
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Conta no [Everhour](https://everhour.com) (free ou paga)
+- Token de API (disponível nas configurações da sua conta Everhour)
+- VS Code versão 1.75.0 ou superior
 
-## Extension Settings
+## ⚙️ Configuração
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+1. Instale a extensão
+2. Execute o comando `Everhour: Definir Token API` (Ctrl+Shift+P)
+3. Cole seu token de API do Everhour
+4. Acesse a aba "Everhour Timesheet" na barra lateral
 
-For example:
+## ⚠️ Problemas Conhecidos
 
-This extension contributes the following settings:
+- Em redes corporativas, pode ser necessário configurar proxy
+- O contador em tempo real atualiza a cada 1 minuto
+- Limite de 250 tarefas por projeto
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+## 📌 Dicas de Uso
 
-## Known Issues
+- Atalho `Ctrl+Alt+E` abre rápido a view de timesheet
+- Clique duplo em uma tarefa para ver detalhes
+- Use a barra de busca para filtrar tarefas rapidamente
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## 📅 Histórico de Versões
 
-## Release Notes
-
-Users appreciate release notes as you update your extension.
+### 1.1.0 (Atual)
+- Destaque visual melhorado para tarefa ativa
+- Suporte a filtros combinados
+- Correção de sincronização em projetos grandes
 
 ### 1.0.0
+- Versão inicial lançada
 
-Initial release of ...
+## 🤝 Como Contribuir
 
-### 1.0.1
+Encontrou um bug ou tem uma sugestão? 
+1. Abra uma [issue no GitHub](https://github.com/seuuser/suarepo/issues)
+2. Descreva detalhadamente o caso
+3. Anexe prints se possível
 
-Fixed issue #.
+## 📜 Licença
 
-### 1.1.0
-
-Added features X, Y, and Z.
+Distribuído sob licença MIT. Veja o arquivo `LICENSE` para mais informações.
 
 ---
 
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Alírio Guerra - [alirioguerra.92@gmail.com]
