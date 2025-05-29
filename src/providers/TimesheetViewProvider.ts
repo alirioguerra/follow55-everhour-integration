@@ -20,7 +20,13 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
     this.api = new EverhourAPI(context);
     this.weeklyTaskManager = new WeeklyTaskManager(context);
     this.state = new TimesheetState();
-    this.htmlGenerator = new TimesheetHtmlGenerator(this.weeklyTaskManager, this.state);
+    this.htmlGenerator = new TimesheetHtmlGenerator(
+      this.weeklyTaskManager,
+      this.state,
+      // Adicionamos os novos parâmetros
+      this._view?.webview || null as any, // Temporário, será definido em resolveWebviewView
+      this.context
+    );
     this.messageHandler = new TimesheetMessageHandler(
       this.api,
       this.weeklyTaskManager,
@@ -37,7 +43,15 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
       localResourceRoots: [this.context.extensionUri]
     };
     
-    webviewView.webview.html = this.htmlGenerator.generateHtml(webviewView.webview, this.context);
+    // Atualizamos o htmlGenerator com a webview correta
+    this.htmlGenerator = new TimesheetHtmlGenerator(
+      this.weeklyTaskManager,
+      this.state,
+      webviewView.webview,
+      this.context
+    );
+    
+    webviewView.webview.html = this.htmlGenerator.generateHtml();
     
     webviewView.webview.onDidReceiveMessage(async message => {
       await this.messageHandler.handleMessage(message);
@@ -56,6 +70,7 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
       }
       
       await this.checkCurrentTimer();
+      this.updateView(); // Garantir que a view seja atualizada após carregar dados
     } catch (error) {
       console.error('Error loading initial data:', error);
       vscode.window.showErrorMessage(
@@ -96,7 +111,13 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
   
   public updateView() {
     if (this._view) {
-      this._view.webview.html = this.htmlGenerator.generateHtml(this._view.webview, this.context);
+      // Chamada simplificada para generateHtml()
+      this._view.webview.html = this.htmlGenerator.generateHtml();
     }
+  }
+  
+  // Método para limpeza
+  public dispose() {
+    this._view = undefined;
   }
 }
