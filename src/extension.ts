@@ -1,38 +1,35 @@
 import * as vscode from 'vscode';
-import { TimesheetViewProvider } from './TimesheetViewProvider';
+import { TimesheetViewProvider } from './providers/TimesheetViewProvider';
 
-export async function activate(context: vscode.ExtensionContext) {
-  console.log('Follow55 - Everhour integration active!');
-
-  const tokenKey = 'everhourToken';
-
-  const timesheetViewProvider = new TimesheetViewProvider(context);
-  
+export function activate(context: vscode.ExtensionContext) {
+  // Register the Timesheet view
+  const timesheetProvider = new TimesheetViewProvider(context);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       TimesheetViewProvider.viewType,
-      timesheetViewProvider
-    ),
-    
-    vscode.commands.registerCommand('follow55-everhour-integration.setToken', async () => {
-      const newToken = await vscode.window.showInputBox({
-        placeHolder: 'Insira seu token da API do Everhour',
-        prompt: 'Configure seu token Everhour',
-        ignoreFocusOut: true,
-        password: true,
-        validateInput: (value) => {
-          if (!value || value.length < 10) {
-            return 'O token parece inválido.';
-          }
-          return null;
-        }
+      timesheetProvider
+    )
+  );
+  
+  // Register commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand('everhour.setToken', async () => {
+      const token = await vscode.window.showInputBox({
+        prompt: 'Enter your Everhour API token',
+        password: true
       });
-
-      if (newToken) {
-        await context.globalState.update(tokenKey, newToken);
-        vscode.window.showInformationMessage('Token Everhour salvo/atualizado com sucesso!');
-        timesheetViewProvider.updateView();
+      
+      if (token) {
+        context.globalState.update('everhourToken', token);
+        vscode.window.showInformationMessage('Everhour token saved successfully!');
+        timesheetProvider.updateView();
       }
+    }),
+    
+    vscode.commands.registerCommand('everhour.clearToken', () => {
+      context.globalState.update('everhourToken', undefined);
+      vscode.window.showInformationMessage('Everhour token cleared');
+      timesheetProvider.updateView();
     })
   );
 }
