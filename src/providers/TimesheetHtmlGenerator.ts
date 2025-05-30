@@ -172,8 +172,8 @@ export class TimesheetHtmlGenerator {
       
       const baseTime = task.originalTask?.time?.total || 0;
       const elapsedTime = isRunning && this.state.currentTimer.startTime 
-        ? Math.floor((Date.now() - this.state.currentTimer.startTime) / 60000)
-        : 0;
+      ? Math.floor((Date.now() - this.state.currentTimer.startTime) / 60000)
+      : 0;
       
       return `<div class="weekly-task ${isRunning ? 'running' : ''}" 
                    data-task-id="${task.id}" 
@@ -183,11 +183,11 @@ export class TimesheetHtmlGenerator {
             <div class="weekly-task-name">${this.escapeHtml(task.name)}</div>
             <div class="weekly-task-actions">
               ${this.createButton({
-                    onClick: `removeFromWeeklyPlan('${task.everhourId}')`,
-                    icon: '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>',
-                    class: 'remove-task',
-                    title: 'Remove task'
-                 })}
+      onClick: `removeFromWeeklyPlan('${task.everhourId}')`,
+      icon: '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>',
+      class: 'remove-task',
+      title: 'Remove task'
+    })}
               ${timerButton}
             </div>
           </div>
@@ -222,12 +222,11 @@ export class TimesheetHtmlGenerator {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
   }
-
+  
   private getStylesUri(): vscode.Uri {
     const cssPath = vscode.Uri.joinPath(this.context.extensionUri, 'media', 'timesheet.css');
     return this.webview.asWebviewUri(cssPath);
   }
-
   
   private getStyles(): string {
     return `@import url('${this.getStylesUri()}');`;
@@ -312,7 +311,7 @@ export class TimesheetHtmlGenerator {
           const minutes = Math.floor((totalSeconds % 3600) / 60);
           return \`\${hours}h \${minutes}m\`;
         }
-
+    
         function isTaskInWeeklyPlan(taskId) {
           // Procura na DOM se existe um elemento weekly-task com o everhour-id igual ao taskId
           return !!document.querySelector(\`.weekly-task[data-everhour-id="\${taskId}"]\`);
