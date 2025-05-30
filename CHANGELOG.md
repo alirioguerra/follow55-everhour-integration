@@ -9,7 +9,10 @@ e usa versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [0.0.6]
 ### Adicionado
-- Compatibilidade com versões anteriores do vscode
+- Compatibilidade com versões anteriores do vscode (^1.90.0)
+
+### Corrigido
+- Incompatibilidade entre versão do VS Code e @types/vscode
 
 ## [0.0.5]
 ### Adicionado
