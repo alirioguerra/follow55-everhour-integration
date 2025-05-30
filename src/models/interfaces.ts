@@ -7,7 +7,6 @@ export interface EverhourProject {
 export interface EverhourTask {
   id: string;
   name: string;
-  status: 'open' | 'closed' | 'in_progress' | 'completed';
   projects: string[];
   section?: number;
   labels?: string[];
@@ -28,7 +27,6 @@ export interface WeeklyTask {
   id: string; // ID interno para gerenciamento
   everhourId: string; // ID da tarefa no Everhour
   name: string;
-  dayOfWeek?: number; // 0-6 (Domingo-Sábado)
   createdAt?: number;
   originalTask?: EverhourTask; // Dados completos da tarefa original
 }

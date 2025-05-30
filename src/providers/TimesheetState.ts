@@ -70,11 +70,6 @@ export class TimesheetState {
     return this._currentTimer;
   }
   
-  get activeTask(): EverhourTask | undefined {
-    if (!this._currentTimer.taskId) {return undefined;}
-    return this.getTaskById(this._currentTimer.taskId);
-  }
-  
   setCurrentTimer(timer: {taskId?: string, startTime?: number}) {
     this._currentTimer = timer;
   }
