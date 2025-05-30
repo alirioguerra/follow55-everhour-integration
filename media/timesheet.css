@@ -1,0 +1,191 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  color: var(--vscode-foreground);
+  background-color: var(--vscode-editor-background);
+  margin: 0;
+  padding: 8px;
+}
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+select, input[type=search] {
+  background-color: var(--vscode-dropdown-background);
+  color: var(--vscode-dropdown-foreground);
+  border: 1px solid var(--vscode-dropdown-border);
+  border-radius: 3px;
+  font-size: 13px;
+  padding: 3px 6px;
+}
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 4px;
+  gap: 8px;
+  border-bottom: 1px solid var(--vscode-editorGroup-border);
+}
+.task.active {
+  background-color: var(--vscode-editor-selectionHighlightBackground);
+  border-left: 3px solid var(--vscode-button-background);
+  padding-left: 8px;
+}
+.task-name {
+  flex: 1 1 80px;
+  min-width: 0;
+}
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.activity-status {
+  border: none;
+  cursor: pointer;
+  color: white;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+.activity-status.play {
+  background-color: green;
+}
+.activity-status.play:hover {
+  background-color: darkgreen;
+}
+.activity-status.pause {
+  background-color: red;
+}
+.activity-status.pause:hover {
+  background-color: darkred;
+}
+.activity-status svg {
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  border-radius: 3px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.no-tasks {
+  padding: 12px;
+  color: var(--vscode-descriptionForeground);
+  font-style: italic;
+}
+.weekly-tasks-container {
+  margin-bottom: 16px;
+  background-color: var(--vscode-sideBar-background);
+  border-radius: 4px;
+  padding: 8px;
+  border: 1px solid var(--vscode-panel-border);
+}
+.weekly-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.weekly-header h3 {
+  margin: 0;
+  font-size: 1.1em;
+  color: var(--vscode-foreground);
+}
+.clear-all-btn {
+  background-color: var(--vscode-errorForeground);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.clear-all-btn:hover {
+  opacity: 0.8;
+}
+.weekly-tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.weekly-task {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background-color: var(--vscode-editor-background);
+  border-radius: 3px;
+  border: 1px solid var(--vscode-editorGroup-border);
+  transition: all 0.2s ease;
+}
+.weekly-task.running {
+  background-color: var(--vscode-editor-selectionHighlightBackground);
+  border-left: 3px solid var(--vscode-button-background);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+.weekly-task-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+.weekly-task-time {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  align-items: center;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: var(--vscode-foreground);
+  margin-top: 4px;
+}
+.weekly-task.running .weekly-task-time {
+  font-weight: bold;
+  color: var(--vscode-button-background);
+}
+.weekly-task-name {
+  flex-grow: 1;
+  font-size: 0.9em;
+}
+.weekly-task-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.remove-task, .remove-weekly, .add-weekly {
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+.remove-task, .remove-weekly {
+  color: var(--vscode-errorForeground);
+  background-color: var(--vscode-errorBackground);
+}
+.add-weekly {
+  color: var(--vscode-successForeground);
+  background-color: var(--vscode-successBackground);
+}
