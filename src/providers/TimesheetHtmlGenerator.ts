@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { WeeklyTaskManager } from './WeeklyTaskManager';
 import { TimesheetState } from './TimesheetState';
-import { WeeklyTask, EverhourTask } from '../models/interfaces';
+import { WeeklyTask, EverhourTask, EverhourProject } from '../models/interfaces';
 import { TimeFormatter } from '../utils/timeFormatter';
 
 interface TemplateData {
@@ -68,7 +68,7 @@ export class TimesheetHtmlGenerator {
   private generateProjectsHtml(): string {
     return this.state.projects
     .map(p => `<option value="${p.id}" ${p.id === this.state.selectedProjectId ? 'selected' : ''}>
-                  ${this.escapeHtml(p.name)}
+                  ${this.escapeHtml(p.name)} ${p.status ? `(${p.status})` : ''}
                 </option>`)
       .join('\n');
     }
@@ -87,16 +87,75 @@ export class TimesheetHtmlGenerator {
       const isRunning = this.state.isTaskRunning(task.id);
       const isInWeeklyList = this.weeklyTaskManager.isTaskInWeeklyList(task.id);
       
+      // Prepara os dados completos da tarefa para o atributo data
+      const taskData = {
+        id: task.id,
+        name: task.name,
+        projects: task.projects,
+        section: task.section,
+        time: task.time,
+        estimate: task.estimate,
+        dueAt: task.dueAt
+      };
+      
+      // Formata informações adicionais
+      const projectInfo = task.projects && task.projects.length > 0 ? 
+      `<span class="task-project">${this.getProjectName(task.projects[0])}</span>` : '';
+      
+      const dueInfo = task.dueAt ? 
+      `<span class="task-due ${this.isOverdue(task.dueAt) ? 'overdue' : ''}">
+        (due: ${new Date(task.dueAt).toLocaleDateString()})
+      </span>` : '';
+      
       return `<div class="task ${isRunning ? 'active' : ''}" 
                  data-task-id="${task.id}"
+                 data-task-data='${this.escapeHtml(JSON.stringify(taskData))}'
                  role="listitem"
-                 aria-label="${this.escapeHtml(task.name)}, ${TimeFormatter.formatTime(task.time?.total)}">
-              <div class="task-name" title="${this.escapeHtml(task.name)}">${this.escapeHtml(task.name)}</div>
-              <div>${TimeFormatter.formatTime(task.time?.total)}</div>
+                 aria-label="${this.escapeHtml(task.name)}">
+              <div class="task-info">
+                <div class="task-name" title="${this.escapeHtml(task.name)}">
+                  ${this.escapeHtml(task.name)}
+                </div>
+                <div class="task-meta">
+                  ${projectInfo}
+                  ${dueInfo}
+                </div>
+              </div>
+              <div class="task-time">
+                ${this.formatTaskTime(task)}
+              </div>
               <div class="task-actions">
                   ${this.generateTaskActionButtons(task.id, isRunning, isInWeeklyList)}
               </div>
           </div>`;
+    }
+    
+    private getProjectName(projectId: string): string {
+      const project = this.state.projects.find(p => p.id === projectId);
+      return project ? this.escapeHtml(project.name) : '';
+    }
+    
+    private isOverdue(dueAt: string): boolean {
+      try {
+        const dueDate = new Date(dueAt);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return dueDate < today;
+      } catch {
+        return false;
+      }
+    }
+    
+    private formatTaskTime(task: EverhourTask): string {
+      const timeLogged = task.time?.total ? TimeFormatter.formatTime(task.time.total) : '0h 0m';
+      
+      if (task.estimate?.total) {
+        const estimate = TimeFormatter.formatTime(task.estimate.total);
+        return `<div class="time-logged">${timeLogged}</div>
+              <div class="time-estimate">/ ${estimate}</div>`;
+      }
+      
+      return `<div class="time-logged">${timeLogged}</div>`;
     }
     
     private generateTaskActionButtons(taskId: string, isRunning: boolean, isInWeeklyList: boolean): string {
@@ -155,22 +214,14 @@ export class TimesheetHtmlGenerator {
     
     private generateWeeklyTaskHtml(task: WeeklyTask): string {
       const isRunning = this.state.isTaskRunning(task.everhourId);
+      const originalTask = task.originalTask;
       
-      const timerButton = isRunning
-      ? this.createButton({
-        onClick: 'stopTimer()',
-        icon: '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>',
-        class: 'activity-status pause',
-        title: 'Stop timer'
-      })
-      : this.createButton({
-        onClick: `startTimer('${task.everhourId}')`,
-        icon: '<path d="M8 5v14l11-7z"/>',
-        class: 'activity-status play',
-        title: 'Start timer'
-      });
+      // Se temos a tarefa original, usamos esses dados
+      const taskName = originalTask?.name || task.name;
+      const projectName = originalTask?.projects?.[0] ? 
+      ` (${this.getProjectName(originalTask.projects[0])})` : '';
       
-      const baseTime = task.originalTask?.time?.total || 0;
+      const baseTime = originalTask?.time?.total || 0;
       const elapsedTime = isRunning && this.state.currentTimer.startTime 
       ? Math.floor((Date.now() - this.state.currentTimer.startTime) / 60000)
       : 0;
@@ -180,7 +231,13 @@ export class TimesheetHtmlGenerator {
                    data-everhour-id="${task.everhourId}"
                    role="listitem">
           <div class="weekly-task-content">
-            <div class="weekly-task-name">${this.escapeHtml(task.name)}</div>
+            <div class="weekly-task-info">
+              <div class="weekly-task-name">${this.escapeHtml(taskName)}${projectName}</div>
+              ${originalTask?.dueAt ? 
+      `<div class="weekly-task-due ${this.isOverdue(originalTask.dueAt) ? 'overdue' : ''}">
+                  due: ${new Date(originalTask.dueAt).toLocaleDateString()}
+                </div>` : ''}
+            </div>
             <div class="weekly-task-actions">
               ${this.createButton({
       onClick: `removeFromWeeklyPlan('${task.everhourId}')`,
@@ -188,7 +245,19 @@ export class TimesheetHtmlGenerator {
       class: 'remove-task',
       title: 'Remove task'
     })}
-              ${timerButton}
+              ${isRunning
+    ? this.createButton({
+      onClick: 'stopTimer()',
+      icon: '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>',
+      class: 'activity-status pause',
+      title: 'Stop timer'
+    })
+    : this.createButton({
+      onClick: `startTimer('${task.everhourId}')`,
+      icon: '<path d="M8 5v14l11-7z"/>',
+      class: 'activity-status play',
+      title: 'Start timer'
+    })}
             </div>
           </div>
           <div class="weekly-task-time" data-base-time="${baseTime}">
@@ -244,11 +313,24 @@ export class TimesheetHtmlGenerator {
         }
         
         function startTimer(taskId) {
+          const taskElement = document.querySelector(\`.task[data-task-id="\${taskId}"]\`);
+          let taskData = null;
+          
+          if (taskElement) {
+            taskData = JSON.parse(taskElement.dataset.taskData);
+          }
+          
           // Só adiciona à weekly se não estiver
           if (!isTaskInWeeklyPlan(taskId)) {
             addToWeeklyPlan(taskId);
           }
-          vscode.postMessage({ command: 'startTimer', taskId, autoAddToWeekly: true });
+          
+          vscode.postMessage({ 
+            command: 'startTimer', 
+            taskId, 
+            autoAddToWeekly: true,
+            taskData: taskData
+          });
         }
         
         function stopTimer() {
@@ -256,7 +338,14 @@ export class TimesheetHtmlGenerator {
         }
         
         function addToWeeklyPlan(taskId) {
-          vscode.postMessage({ command: 'addToWeeklyPlan', taskId });
+          const taskElement = document.querySelector(\`.task[data-task-id="\${taskId}"]\`);
+          if (taskElement) {
+            const taskData = JSON.parse(taskElement.dataset.taskData);
+            vscode.postMessage({ 
+              command: 'addToWeeklyPlan', 
+              taskData: taskData
+            });
+          }
         }
         
         function removeFromWeeklyPlan(taskId) {
@@ -313,7 +402,6 @@ export class TimesheetHtmlGenerator {
         }
     
         function isTaskInWeeklyPlan(taskId) {
-          // Procura na DOM se existe um elemento weekly-task com o everhour-id igual ao taskId
           return !!document.querySelector(\`.weekly-task[data-everhour-id="\${taskId}"]\`);
         }
         

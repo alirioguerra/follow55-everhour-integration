@@ -56,7 +56,7 @@ export class EverhourAPI {
     
     return await response.json();
   }
-  
+
   public async startTimer(taskId: string): Promise<void> {
     const token = this.getToken();
     if (!token) {

@@ -34,8 +34,6 @@ export class WeeklyTaskManager {
     this.saveTasks();
   }
   
-  
-  
   // Remove uma tarefa da lista
   public removeTask(taskId: string): void {
     this.weeklyTasks = this.weeklyTasks.filter(t => t.id !== taskId);
