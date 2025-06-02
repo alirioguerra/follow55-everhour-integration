@@ -1,75 +1,81 @@
 # Changelog
 
-Todas as mudanças notáveis neste projeto serão documentadas aqui.
+All notable changes to this project will be documented in this file.
 
-Segue o formato recomendado por [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/)
-e usa versionamento [SemVer](https://semver.org/lang/pt-BR/).
+This project adheres to the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-## [0.0.6]
-### Adicionado
-- Compatibilidade com versões anteriores do vscode (^1.90.0)
+## [0.0.7]
+### Improved
+- Changelog is now written in English
 
-### Corrigido
-- Incompatibilidade entre versão do VS Code e @types/vscode
+### Fixed
+- Command error when adding the token
+
+## [0.0.6]
+### Added
+- Compatibility with earlier versions of VS Code (^1.90.0)
+
+### Fixed
+- Incompatibility between VS Code version and @types/vscode
 
 ## [0.0.5]
-### Adicionado
-- Gerenciamento de tarefas semanais
-- Sistema de busca e filtro de tarefas
-- Contador em tempo real para tarefa ativa
-- Visualização de tempo total e diário por tarefa
+### Added
+- Weekly task management
+- Task search and filtering system
+- Real-time timer for active task
+- Daily and total time overview per task
 
-### Melhorado
-- Interface do usuário mais responsiva
-- Melhor feedback visual durante operações
-- Otimização no carregamento de projetos
+### Improved
+- More responsive user interface
+- Better visual feedback during operations
+- Optimized project loading
 
-### Corrigido
-- Tratamento de erros na comunicação com API
-- Validação de token de autenticação
-- Sincronização de estado em múltiplas janelas
+### Fixed
+- Error handling in API communication
+- Authentication token validation
+- State synchronization across multiple windows
 
 ## [0.0.4] - 2024-03-27
-### Adicionado
-- Suporte a filtros combinados
-- Destaque visual melhorado para tarefa ativa
-- Integração com WebView do VS Code
-- Sistema de gerenciamento de estado
+### Added
+- Combined filter support
+- Improved visual highlight for active task
+- Integration with VS Code WebView
+- State management system
 
-### Corrigido
-- Problema de sincronização em projetos grandes
-- Tratamento de erros na API
-- Validação de dados recebidos
+### Fixed
+- Synchronization issues in large projects
+- API error handling
+- Validation of received data
 
-### Alterado
-- Ajuste no ícone da extensão para melhor visualização
-- Refatoração da estrutura do código
-- Melhoria na organização dos componentes
+### Changed
+- Extension icon improved for better visibility
+- Codebase refactored
+- Better component organization
 
 ## [0.0.3] - 2024-03-20
-### Adicionado
-- Suporte a múltiplos projetos
-- Sistema de cache para requisições
-- Melhorias na interface do usuário
+### Added
+- Support for multiple projects
+- Request caching system
+- UI improvements
 
-### Corrigido
-- Problemas de performance em listas grandes
-- Bugs na sincronização de tempo
+### Fixed
+- Performance issues with large lists
+- Bugs in time synchronization
 
 ## [0.0.2] - 2024-03-15
-### Adicionado
-- Sistema de autenticação com token
-- Listagem básica de tarefas
-- Controle de tempo básico
+### Added
+- Token-based authentication system
+- Basic task listing
+- Basic time tracking
 
-### Corrigido
-- Problemas de inicialização
-- Erros de validação
+### Fixed
+- Initialization issues
+- Validation errors
 
 ## [0.0.1] - 2024-03-10
-### Adicionado
-- Versão inicial da extensão com integração básica Everhour
-- Estrutura base do projeto
-- Configuração inicial do ambiente de desenvolvimento
+### Added
+- Initial version of the extension with basic Everhour integration
+- Base project structure
+- Initial development environment setup

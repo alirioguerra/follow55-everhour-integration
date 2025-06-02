@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
   
   // Register commands
   context.subscriptions.push(
-    vscode.commands.registerCommand('everhour.setToken', async () => {
+    vscode.commands.registerCommand('follow55-everhour-integration.setToken', async () => {
       const token = await vscode.window.showInputBox({
         prompt: 'Enter your Everhour API token',
         password: true
