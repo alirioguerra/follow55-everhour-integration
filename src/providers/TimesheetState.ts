@@ -1,6 +1,7 @@
 // 2. TimesheetState.ts (Gerenciamento de estado)
 import { EverhourProject, EverhourTask } from '../models/interfaces';
 import { TimeFormatter } from '../utils/timeFormatter';
+import { WeeklyTaskManager } from './WeeklyTaskManager';
 
 export class TimesheetState {
   private _projects: EverhourProject[] = [];
@@ -8,6 +9,11 @@ export class TimesheetState {
   private _selectedProjectId: string | null = null;
   private _currentTimer: {taskId?: string, startTime?: number} = {};
   private _searchTerm: string = '';
+  private _weeklyTaskManager: WeeklyTaskManager;
+  
+  constructor(weeklyTaskManager: WeeklyTaskManager) {
+    this._weeklyTaskManager = weeklyTaskManager;
+  }
   
   // Projects
   get projects(): EverhourProject[] {
@@ -52,8 +58,19 @@ export class TimesheetState {
   }
   
   getTaskName(taskId: string): string {
+    // First try to find in regular tasks
     const task = this.getTaskById(taskId);
-    return task ? task.name : 'Unknown task';
+    if (task) {
+        return task.name;
+    }
+    
+    // If not found in regular tasks, check weekly tasks
+    const weeklyTask = this._weeklyTaskManager?.getWeeklyTaskById(taskId);
+    if (weeklyTask) {
+        return weeklyTask.name;
+    }
+    
+    return 'Unknown task';
   }
   
   // Project selection

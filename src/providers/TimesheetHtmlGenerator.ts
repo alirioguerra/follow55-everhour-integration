@@ -192,10 +192,13 @@ export class TimesheetHtmlGenerator {
         title: 'Start timer'
       });
       
+      // Get the most up-to-date time from the original task if available
       const baseTime = task.originalTask?.time?.total || 0;
       const elapsedTime = isRunning && this.state.currentTimer.startTime 
-      ? Math.floor((Date.now() - this.state.currentTimer.startTime) / 60000)
-      : 0;
+        ? Math.floor((Date.now() - this.state.currentTimer.startTime) / 60000) * 60 // Convert to seconds
+        : 0;
+      
+      const totalTime = baseTime + elapsedTime;
       
       return `<div class="weekly-task ${isRunning ? 'running' : ''}" 
                    data-task-id="${task.id}" 
@@ -205,19 +208,19 @@ export class TimesheetHtmlGenerator {
             <div class="weekly-task-name">${this.escapeHtml(task.name)}</div>
             <div class="weekly-task-actions">
               ${this.createButton({
-      onClick: `removeFromWeeklyPlan('${task.everhourId}')`,
-      icon: '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>',
-      class: 'remove-task',
-      title: 'Remove task'
-    })}
+                onClick: `removeFromWeeklyPlan('${task.everhourId}')`,
+                icon: '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>',
+                class: 'remove-task',
+                title: 'Remove task'
+              })}
               ${timerButton}
             </div>
           </div>
-          <div class="weekly-task-time" data-base-time="${baseTime}">
-            ${TimeFormatter.formatTime(baseTime)}${elapsedTime > 0 ? ` (+${elapsedTime}m)` : ''}
+          <div class="weekly-task-time" data-base-time="${baseTime}" data-total-time="${totalTime}">
+            ${TimeFormatter.formatTime(totalTime)}
           </div>
         </div>`;
-  }
+    }
   
   private createButton(options: {
     onClick: string;
@@ -365,20 +368,20 @@ export class TimesheetHtmlGenerator {
             
             if (startTime && timeElement) {
               const update = () => {
-                const elapsedMinutes = Math.floor((Date.now() - startTime) / 60000);
-                const formattedBaseTime = formatTime(baseTime);
-                timeElement.textContent = \`\${formattedBaseTime} (+\${elapsedMinutes}m)\`;
+                const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+                const totalTime = baseTime + elapsedSeconds;
+                timeElement.dataset.totalTime = totalTime.toString();
+                timeElement.textContent = formatTime(totalTime);
               };
               
               update();
               const interval = setInterval(() => {
-                // Verifica se a task ainda está rodando
                 if (taskElement.classList.contains('running')) {
                   update();
                 } else {
                   clearInterval(interval);
                 }
-              }, 60000);
+              }, 1000); // Update every second instead of every minute
             }
           });
         }

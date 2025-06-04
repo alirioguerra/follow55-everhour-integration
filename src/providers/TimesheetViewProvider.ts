@@ -19,7 +19,7 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
   constructor(private readonly context: vscode.ExtensionContext) {
     this.api = new EverhourAPI(context);
     this.weeklyTaskManager = new WeeklyTaskManager(context);
-    this.state = new TimesheetState();
+    this.state = new TimesheetState(this.weeklyTaskManager);
     this.htmlGenerator = new TimesheetHtmlGenerator(
       this.weeklyTaskManager,
       this.state,

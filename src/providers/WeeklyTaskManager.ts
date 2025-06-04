@@ -50,6 +50,11 @@ export class WeeklyTaskManager {
     return this.weeklyTasks.some(task => task.everhourId === everhourTaskId);
   }
   
+  // Get a weekly task by its Everhour ID
+  public getWeeklyTaskById(everhourTaskId: string): WeeklyTask | undefined {
+    return this.weeklyTasks.find(task => task.everhourId === everhourTaskId);
+  }
+  
   // Limpa todas as tarefas da semana
   public clearAllTasks(): void {
     this.weeklyTasks = [];
