@@ -78,17 +78,36 @@ export class TimesheetMessageHandler {
   private async handleStopTimer() {
     await this.api.stopTimer();
     
-    const elapsedMinutes = this.state.currentTimer.startTime 
-    ? Math.floor((Date.now() - this.state.currentTimer.startTime) / 60000)
-    : 0;
+    const taskId = this.state.currentTimer.taskId;
+    const startTime = this.state.currentTimer.startTime;
     
-    const taskName = this.state.getTaskName(this.state.currentTimer.taskId || '');
-    this.state.setCurrentTimer({});
-    this.updateViewCallback();
-    
-    vscode.window.showInformationMessage(
-      `Timer stopped for ${taskName}. Elapsed time: ${elapsedMinutes} minutes`
-    );
+    if (taskId && startTime) {
+        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        
+        // Update the task's time in both weekly and regular tasks
+        const task = this.state.getTaskById(taskId);
+        if (task && task.time) {
+            task.time.total = (task.time.total || 0) + elapsedSeconds;
+        }
+        
+        const weeklyTask = this.weeklyTaskManager.getWeeklyTaskById(taskId);
+        if (weeklyTask && weeklyTask.originalTask?.time) {
+            weeklyTask.originalTask.time.total = (weeklyTask.originalTask.time.total || 0) + elapsedSeconds;
+        }
+        
+        const taskName = this.state.getTaskName(taskId);
+        const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+        
+        this.state.setCurrentTimer({});
+        this.updateViewCallback();
+        
+        vscode.window.showInformationMessage(
+            `Timer stopped for ${taskName}. Elapsed time: ${elapsedMinutes} minutes`
+        );
+    } else {
+        this.state.setCurrentTimer({});
+        this.updateViewCallback();
+    }
   }
   
   private async handleLogTime(taskId: string, minutes: number) {

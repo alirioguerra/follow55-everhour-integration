@@ -195,10 +195,11 @@ export class TimesheetHtmlGenerator {
       // Get the most up-to-date time from the original task if available
       const baseTime = task.originalTask?.time?.total || 0;
       const elapsedTime = isRunning && this.state.currentTimer.startTime 
-        ? Math.floor((Date.now() - this.state.currentTimer.startTime) / 60000) * 60 // Convert to seconds
+        ? Math.floor((Date.now() - this.state.currentTimer.startTime) / 1000)
         : 0;
       
       const totalTime = baseTime + elapsedTime;
+      const elapsedMinutes = Math.floor(elapsedTime / 60);
       
       return `<div class="weekly-task ${isRunning ? 'running' : ''}" 
                    data-task-id="${task.id}" 
@@ -217,7 +218,7 @@ export class TimesheetHtmlGenerator {
             </div>
           </div>
           <div class="weekly-task-time" data-base-time="${baseTime}" data-total-time="${totalTime}">
-            ${TimeFormatter.formatTime(totalTime)}
+            ${TimeFormatter.formatTime(baseTime)}${isRunning ? ` (+${elapsedMinutes}m)` : ''}
           </div>
         </div>`;
     }
@@ -369,9 +370,10 @@ export class TimesheetHtmlGenerator {
             if (startTime && timeElement) {
               const update = () => {
                 const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+                const elapsedMinutes = Math.floor(elapsedSeconds / 60);
                 const totalTime = baseTime + elapsedSeconds;
                 timeElement.dataset.totalTime = totalTime.toString();
-                timeElement.textContent = formatTime(totalTime);
+                timeElement.textContent = formatTime(baseTime) + ' (+' + elapsedMinutes + 'm)';
               };
               
               update();
@@ -381,7 +383,7 @@ export class TimesheetHtmlGenerator {
                 } else {
                   clearInterval(interval);
                 }
-              }, 1000); // Update every second instead of every minute
+              }, 1000); // Update every second
             }
           });
         }
