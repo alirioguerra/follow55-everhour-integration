@@ -3,7 +3,7 @@ import { EverhourTask, WeeklyTask } from '../models/interfaces';
 
 export class WeeklyTaskManager {
   private static STORAGE_KEY = 'weeklyTasks';
-  private context: vscode.ExtensionContext;
+  public readonly context: vscode.ExtensionContext;
   private weeklyTasks: WeeklyTask[] = [];
   
   constructor(context: vscode.ExtensionContext) {

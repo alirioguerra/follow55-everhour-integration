@@ -45,10 +45,13 @@ export class TimesheetHtmlGenerator {
   </head>
   <body>
     <div class="header">
-      <select id="projectSelect" onchange="selectProject(this.value)" aria-label="Select project">
-        ${data.projectsHtml}
-      </select>
-       <input type="search" id="taskSearch" 
+      <div class="project-selector">
+      ${this.generateRecentProjectsHtml()}
+        <select id="projectSelect" onchange="selectProject(this.value)" aria-label="Select project">
+          ${data.projectsHtml}
+        </select>
+      </div>
+      <input type="search" id="taskSearch" 
            placeholder="Search tasks..." 
            value="${data.searchTerm}"
            oninput="onSearchInput(this.value)"
@@ -425,5 +428,30 @@ export class TimesheetHtmlGenerator {
           // Atualiza a cada minuto para tarefas que estão rodando
           setInterval(updateRunningTimers, 60000);
         });`;
+  }
+
+  private generateRecentProjectsHtml(): string {
+    const recentProjects = this.state.recentProjects;
+    if (recentProjects.length === 0) {
+      return '';
+    }
+
+    return `
+      <div class="recent-projects">
+        <h2>Projects</h2>
+        <span class="recent-label">Recent:</span>
+        <div class="recent-projects-list">
+          ${recentProjects.map(project => `
+            <button 
+              onclick="selectProject('${project.id}')"
+              class="recent-project-btn ${project.id === this.state.selectedProjectId ? 'active' : ''}"
+              title="${this.escapeHtml(project.name)}"
+            >
+              ${this.escapeHtml(project.name)}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
   }
 }

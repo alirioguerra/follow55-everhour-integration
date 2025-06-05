@@ -8,9 +8,10 @@ body {
 }
 .header {
   display: flex;
-  flex-direction: column;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+  flex-direction: column;
 }
 select, input[type=search] {
   background-color: var(--vscode-dropdown-background);
@@ -384,4 +385,62 @@ button {
   display: flex;
   gap: 4px;
   align-items: center;
+}
+
+.project-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.recent-projects {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.9em;
+  flex-direction: column;
+}
+
+.recent-projects h2 {
+  margin: 0;
+  font-size: 1.1em;
+  color: var(--vscode-foreground);
+}
+
+#taskSearch, #projectSelect {
+  width: 100% !important;
+}
+
+.recent-label {
+  color: var(--vscode-descriptionForeground);
+}
+
+.recent-projects-list {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.recent-project-btn {
+  background: transparent;
+  border: 1px solid var(--vscode-button-secondaryBackground);
+  color: var(--vscode-foreground);
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.recent-project-btn:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+.recent-project-btn.active {
+  background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
 }
