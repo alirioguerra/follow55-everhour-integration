@@ -114,9 +114,11 @@ export class TimesheetHtmlGenerator {
                  role="listitem"
                  aria-label="${this.escapeHtml(task.name)}, ${TimeFormatter.formatTime(task.time?.total)}">
               <div class="task-name" title="${this.escapeHtml(task.name)}">${this.escapeHtml(task.name)}</div>
-              <div>${TimeFormatter.formatTime(task.time?.total)}</div>
-              <div class="task-actions">
-                  ${this.generateTaskActionButtons(task.id, isRunning, isInWeeklyList)}
+              <div class="task-details">
+                <div class="task-time">${TimeFormatter.formatTime(task.time?.total)}</div>
+                <div class="task-actions">
+                    ${this.generateTaskActionButtons(task.id, isRunning, isInWeeklyList)}
+                </div>
               </div>
           </div>`;
     }
@@ -219,14 +221,12 @@ export class TimesheetHtmlGenerator {
                    data-task-id="${task.id}" 
                    data-everhour-id="${task.everhourId}"
                    role="listitem">
-          <div class="weekly-task-content">
-            <div class="weekly-task-name">${this.escapeHtml(task.name)}</div>
-          </div>
-          <div class="weekly-task-footer">
+          <div class="weekly-task-name">${this.escapeHtml(task.name)}</div>
+          <div class="weekly-task-details">
             <div class="weekly-task-time" data-base-time="${baseTime}" data-total-time="${totalTime}">
-            ${TimeFormatter.formatTime(baseTime)}${isRunning ? ` (+${elapsedMinutes}m)` : ''}
-          </div>
-          <div class="weekly-task-actions">
+              ${TimeFormatter.formatTime(baseTime)}${isRunning ? ` (+${elapsedMinutes}m)` : ''}
+            </div>
+            <div class="weekly-task-actions">
               ${pinButton}
               ${this.createButton({
                 onClick: `removeFromWeeklyPlan('${task.everhourId}')`,

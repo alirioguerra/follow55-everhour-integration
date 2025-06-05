@@ -20,29 +20,59 @@ select, input[type=search] {
   font-size: 13px;
   padding: 3px 6px;
 }
+
+#tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tasks-header h2 {
+  font-size: 1.1em;
+  color: var(--vscode-foreground);
+  margin: 0;
+}
+
 .task {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 4px;
-  gap: 8px;
-  border: 1px solid var(--vscode-editorGroup-border);
+  flex-direction: column;
+  padding: 8px;
+  background-color: var(--vscode-editor-background);
   border-radius: 3px;
-  margin-bottom: 4px; 
+  border: 1px solid var(--vscode-editorGroup-border);
+  transition: all 0.2s ease;
+  gap: 8px;
 }
 .task.active {
   background-color: var(--vscode-editor-selectionHighlightBackground);
   border-left: 3px solid var(--vscode-button-background);
-  padding-left: 8px;
 }
 .task-name {
-  flex: 1 1 80px;
-  min-width: 0;
+  font-size: 0.95em;
+  color: var(--vscode-foreground);
+  word-break: break-word;
+  line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.task-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: var(--vscode-descriptionForeground);
+}
+.task-time {
+  flex-shrink: 0;
 }
 .task-actions {
   display: flex;
+  gap: 4px;
   align-items: center;
-  gap: 8px;
 }
 .activity-status {
   border: none;
@@ -117,8 +147,8 @@ button {
 }
 
 .clear-all-btn {
-  background-color: var(--vscode-errorForeground);
-  color: white;
+  background-color: transparent;
+  color: var(--vscode-foreground);
   border: none;
   border-radius: 3px;
   padding: 4px 8px;
@@ -127,9 +157,10 @@ button {
   display: flex;
   align-items: center;
   gap: 4px;
+  opacity: 0.6;
 }
 .clear-all-btn:hover {
-  opacity: 0.8;
+  opacity: 1;
 }
 .weekly-tasks-list {
   display: flex;
@@ -139,18 +170,16 @@ button {
 .weekly-task {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
   padding: 8px;
   background-color: var(--vscode-editor-background);
   border-radius: 3px;
   border: 1px solid var(--vscode-editorGroup-border);
   transition: all 0.2s ease;
+  gap: 8px;
 }
 .weekly-task.running {
   background-color: var(--vscode-editor-selectionHighlightBackground);
   border-left: 3px solid var(--vscode-button-background);
-  animation: pulse 2s infinite;
 }
 @keyframes pulse {
   0% { opacity: 1; }
@@ -164,26 +193,30 @@ button {
   align-items: center;
 }
 .weekly-task-time {
+  flex-shrink: 0;
+}
+.weekly-task.running .weekly-task-time {
+  color: var(--vscode-button-background);
+  font-weight: bold;
+}
+.weekly-task-name {
+  font-size: 0.95em;
+  color: var(--vscode-foreground);
+  word-break: break-word;
+  line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.weekly-task-details {
   display: flex;
-  justify-content: flex-start;
-  width: 100%;
+  justify-content: space-between;
   align-items: center;
   font-family: monospace;
   font-size: 0.9em;
-  color: var(--vscode-foreground);
-}
-.weekly-task.running .weekly-task-time {
-  font-weight: bold;
-  color: var(--vscode-button-background);
-}
-.weekly-task-name {
-  flex-grow: 1;
-  font-size: 0.9em;
-  -webkit-line-clamp: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--vscode-descriptionForeground);
 }
 .weekly-task-actions {
   display: flex;
