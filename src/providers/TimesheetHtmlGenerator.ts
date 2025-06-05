@@ -221,7 +221,12 @@ export class TimesheetHtmlGenerator {
                    role="listitem">
           <div class="weekly-task-content">
             <div class="weekly-task-name">${this.escapeHtml(task.name)}</div>
-            <div class="weekly-task-actions">
+          </div>
+          <div class="weekly-task-footer">
+            <div class="weekly-task-time" data-base-time="${baseTime}" data-total-time="${totalTime}">
+            ${TimeFormatter.formatTime(baseTime)}${isRunning ? ` (+${elapsedMinutes}m)` : ''}
+          </div>
+          <div class="weekly-task-actions">
               ${pinButton}
               ${this.createButton({
                 onClick: `removeFromWeeklyPlan('${task.everhourId}')`,
@@ -231,9 +236,6 @@ export class TimesheetHtmlGenerator {
               })}
               ${timerButton}
             </div>
-          </div>
-          <div class="weekly-task-time" data-base-time="${baseTime}" data-total-time="${totalTime}">
-            ${TimeFormatter.formatTime(baseTime)}${isRunning ? ` (+${elapsedMinutes}m)` : ''}
           </div>
         </div>`;
     }
