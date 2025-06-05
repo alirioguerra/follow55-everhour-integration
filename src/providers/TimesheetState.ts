@@ -2,6 +2,7 @@
 import { EverhourProject, EverhourTask } from '../models/interfaces';
 import { TimeFormatter } from '../utils/timeFormatter';
 import { WeeklyTaskManager } from './WeeklyTaskManager';
+import * as vscode from 'vscode';
 
 export class TimesheetState {
   private _projects: EverhourProject[] = [];
@@ -12,10 +13,16 @@ export class TimesheetState {
   private _weeklyTaskManager: WeeklyTaskManager;
   private _recentProjects: string[] = []; // Store recent project IDs
   private static readonly MAX_RECENT_PROJECTS = 3;
+  private static readonly WORKSPACE_PROJECT_KEY = 'everhourWorkspaceProject';
+  private _onProjectSelected: ((projectId: string) => Promise<void>) | undefined;
   
   constructor(weeklyTaskManager: WeeklyTaskManager) {
     this._weeklyTaskManager = weeklyTaskManager;
     this.loadRecentProjects();
+  }
+  
+  public setProjectSelectedCallback(callback: (projectId: string) => Promise<void>) {
+    this._onProjectSelected = callback;
   }
   
   // Projects
@@ -68,8 +75,10 @@ export class TimesheetState {
     if (!this._searchTerm) {
       return this._tasks;
     }
+    
+    const searchTerm = this._searchTerm.toLowerCase();
     return this._tasks.filter(task => 
-      task.name.toLowerCase().includes(this._searchTerm.toLowerCase())
+      task.name.toLowerCase().includes(searchTerm)
     );
   }
   
@@ -116,6 +125,7 @@ export class TimesheetState {
   setSelectedProject(projectId: string) {
     this._selectedProjectId = projectId;
     this.addToRecentProjects(projectId);
+    this._onProjectSelected?.(projectId);
   }
   
   // Timer
@@ -136,7 +146,45 @@ export class TimesheetState {
     return this._searchTerm;
   }
   
-  setSearchTerm(term: string) {
-    this._searchTerm = term.trim().toLowerCase();
+  setSearchTerm(term: string | undefined) {
+    this._searchTerm = term || '';
+  }
+
+  public async loadWorkspaceProject() {
+    const workspaceProjectId = this.getWorkspaceProjectId();
+    if (workspaceProjectId) {
+      this.setSelectedProject(workspaceProjectId);
+    }
+  }
+
+  public getWorkspaceProjectId(): string | undefined {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+      return undefined;
+    }
+    
+    const workspaceState = this._weeklyTaskManager.context.workspaceState;
+    return workspaceState.get<string>(TimesheetState.WORKSPACE_PROJECT_KEY);
+  }
+
+  public async linkWorkspaceToProject(projectId: string): Promise<void> {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+      throw new Error('No workspace folder is open');
+    }
+
+    const project = this._projects.find(p => p.id === projectId);
+    if (!project) {
+      throw new Error('Invalid project ID');
+    }
+
+    const workspaceState = this._weeklyTaskManager.context.workspaceState;
+    await workspaceState.update(TimesheetState.WORKSPACE_PROJECT_KEY, projectId);
+    this.setSelectedProject(projectId);
+  }
+
+  public async unlinkWorkspaceProject(): Promise<void> {
+    const workspaceState = this._weeklyTaskManager.context.workspaceState;
+    await workspaceState.update(TimesheetState.WORKSPACE_PROJECT_KEY, undefined);
   }
 }

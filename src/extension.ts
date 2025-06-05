@@ -44,6 +44,36 @@ export function activate(context: vscode.ExtensionContext) {
       context.globalState.update('everhourToken', undefined);
       vscode.window.showInformationMessage('Everhour token cleared');
       timesheetProvider.updateView();
+    }),
+
+    vscode.commands.registerCommand('follow55-everhour-integration.linkProject', async () => {
+      // Get all projects
+      const projects = timesheetProvider.state.projects;
+      if (!projects.length) {
+        vscode.window.showErrorMessage('No Everhour projects found. Please check your token and try again.');
+        return;
+      }
+
+      // Show quick pick to select project
+      const projectItems = projects.map(p => ({
+        label: p.name,
+        description: p.id,
+        project: p
+      }));
+
+      const selectedItem = await vscode.window.showQuickPick(projectItems, {
+        placeHolder: 'Select an Everhour project to link with this workspace'
+      });
+
+      if (selectedItem) {
+        try {
+          await timesheetProvider.state.linkWorkspaceToProject(selectedItem.project.id);
+          vscode.window.showInformationMessage(`Workspace linked to Everhour project: ${selectedItem.project.name}`);
+          timesheetProvider.updateView();
+        } catch (error) {
+          vscode.window.showErrorMessage(`Failed to link project: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
     })
   );
 

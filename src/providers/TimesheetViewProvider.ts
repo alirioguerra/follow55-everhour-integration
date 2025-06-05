@@ -33,6 +33,11 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
     this.weeklyTaskManager = new WeeklyTaskManager(context);
     this.state = new TimesheetState(this.weeklyTaskManager);
     
+    // Set up project selection callback
+    this.state.setProjectSelectedCallback(async (projectId: string) => {
+      await this.fetchTasks(projectId);
+    });
+    
     this.messageHandler = new TimesheetMessageHandler(
       this._api,
       this.weeklyTaskManager,
@@ -81,13 +86,18 @@ export class TimesheetViewProvider implements vscode.WebviewViewProvider {
       console.log('Fetched projects:', projects);
       this.state.setProjects(projects);
       
-      if (projects.length > 0) {
+      // Load workspace project if exists
+      const workspaceProjectId = this.state.getWorkspaceProjectId();
+      if (workspaceProjectId && projects.some(p => p.id === workspaceProjectId)) {
+        await this.state.loadWorkspaceProject();
+      } else if (projects.length > 0) {
         await this.fetchTasks(projects[0].id);
       }
       
       await this.checkCurrentTimer();
     } catch (error) {
       console.error('Failed to load initial data:', error);
+      vscode.window.showErrorMessage('Failed to load Everhour data. Please check your token and try again.');
     }
   }
   

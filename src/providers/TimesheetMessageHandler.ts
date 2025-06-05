@@ -40,7 +40,7 @@ export class TimesheetMessageHandler {
           await this.handleUnpinTask(message.taskId);
           break;
         case 'searchTasks':
-          this.handleSearchTasks(message.searchTerm);
+          this.handleSearchTasks(message.query);
           break;
         case 'refresh':
           await this.handleRefresh();

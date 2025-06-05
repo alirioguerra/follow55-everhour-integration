@@ -1,17 +1,67 @@
-# Changelog
+# Change Log
 
-All notable changes to this project will be documented in this file.
+All notable changes to the "Follow55 - Everhour Integration" extension will be documented in this file.
 
-This project adheres to the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and uses [Semantic Versioning](https://semver.org/).
-
-## [Unreleased]
-
-## [0.0.7]
-### Improved
-- Changelog is now written in English
+## [1.1.0] - 2024-03-25
+### Added
+- New command to link workspace with Everhour project
+  - Automatically associates current workspace with selected project
+  - Persists project selection across sessions
+  - Quick access to project tasks from any workspace
 
 ### Fixed
-- Command error when adding the token
+- Token validation and storage improvements
+- Project selection persistence issues
+- UI responsiveness during loading states
+
+
+## [1.0.0] - 2024-03-21
+### Added
+- Pin functionality for weekly tasks
+  - Users can pin/unpin tasks to VSCode's status bar
+  - Only one task can be pinned at a time
+  - Automatic unpinning of previously pinned task
+  - Visual feedback through notifications
+
+- Recent Projects Feature
+  - Tracks last 3 selected projects
+  - Quick access buttons for recent projects
+  - Persistent storage between sessions
+  - Visual indication of currently selected project
+
+- Loading State Indicator
+  - Spinning loader animation during startup
+  - Loading message for better user feedback
+  - Smooth transition to content
+  - Consistent with VSCode's theming
+
+### Improved
+- Task Layout and UI
+  - Two-line format for better readability
+  - Task name on first line
+  - Time and action buttons on second line
+  - Improved spacing and typography
+  - Monospace fonts for time display
+  - Enhanced button hover effects
+
+- Project Selection UI
+  - Redesigned project selector layout
+  - Full-width search and select inputs
+  - Better organization of project-related elements
+  - Improved visual hierarchy
+
+### Fixed
+- View registration issues that prevented extension display
+- Mismatched view IDs between package.json and code
+- State management issues with pinned tasks
+- Various UI alignment and spacing issues
+
+## [0.0.7] - Initial Release
+- Basic time tracking functionality
+- Project and task selection
+- Time entry management
+- Weekly tasks view
+- Search functionality
 
 ## [0.0.6]
 ### Added
@@ -79,3 +129,13 @@ This project adheres to the [Keep a Changelog](https://keepachangelog.com/en/1.0
 - Initial version of the extension with basic Everhour integration
 - Base project structure
 - Initial development environment setup
+
+## [1.0.1] - 2024-03-28
+### Added
+- Workspace project linking: Associate local VS Code workspaces with Everhour projects
+- Automatic project selection based on workspace link
+- Command to manage workspace-project associations
+
+### Changed
+- Project selection now persists per workspace
+- Improved project management UX
