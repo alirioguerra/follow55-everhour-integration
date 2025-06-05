@@ -1,4 +1,4 @@
-// 1. TimesheetViewProvider.ts (Main provider - coordenador)
+// Main provider - coordinator
 import * as vscode from 'vscode';
 import { TimesheetState } from './TimesheetState';
 import { TimesheetHtmlGenerator } from './TimesheetHtmlGenerator';

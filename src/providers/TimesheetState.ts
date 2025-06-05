@@ -1,4 +1,4 @@
-// 2. TimesheetState.ts (Gerenciamento de estado)
+// State management for the timesheet view
 import { EverhourProject, EverhourTask } from '../models/interfaces';
 import { TimeFormatter } from '../utils/timeFormatter';
 import { WeeklyTaskManager } from './WeeklyTaskManager';

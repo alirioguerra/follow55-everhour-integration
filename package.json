@@ -1,7 +1,7 @@
 {
   "name": "follow55-everhour-integration",
-  "displayName": "Follow55 - Everhour integration",
-  "description": "A extensão perfeita para devs que usam Everhour e querem registrar horas direto do VS Code com máximo foco e mínimo esforço.",
+  "displayName": "Follow55 - Everhour Integration",
+  "description": "The perfect VS Code extension for developers using Everhour who want to track time directly from their editor with maximum focus and minimum effort.",
   "version": "1.1.0",
   "publisher": "AcervoApps",
   "license": "MIT",
@@ -29,7 +29,7 @@
     "commands": [
       {
         "command": "follow55-everhour-integration.setToken",
-        "title": "Configurar Token Everhour"
+        "title": "Configure Everhour Token"
       },
       {
         "command": "follow55-everhour-integration.linkProject",
@@ -50,7 +50,7 @@
         {
           "type": "webview",
           "id": "follow55-everhour.timesheetView",
-          "name": "Tarefas"
+          "name": "Tasks"
         }
       ]
     }

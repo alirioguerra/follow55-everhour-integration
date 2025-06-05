@@ -11,15 +11,15 @@ export class WeeklyTaskManager {
     this.loadTasks();
   }
   
-  // Adiciona uma tarefa do Everhour para a lista semanal
+  // Add an Everhour task to the weekly list
   public addEverhourTask(everhourTask: EverhourTask): void {
     const existingTask = this.weeklyTasks.find(t => t.everhourId === everhourTask.id);
     
     if (existingTask) {
-      // Atualiza a tarefa existente se necessário
+      // Update existing task if necessary
       existingTask.name = everhourTask.name;
     } else {
-      // Cria uma nova tarefa semanal
+      // Create a new weekly task
       const newTask: WeeklyTask = {
         id: Date.now().toString(),
         everhourId: everhourTask.id,
@@ -34,18 +34,18 @@ export class WeeklyTaskManager {
     this.saveTasks();
   }
   
-  // Remove uma tarefa da lista
+  // Remove a task from the list
   public removeTask(taskId: string): void {
     this.weeklyTasks = this.weeklyTasks.filter(t => t.id !== taskId);
     this.saveTasks();
   }
   
-  // Obtém todas as tarefas da semana
+  // Get all weekly tasks
   public getWeeklyTasks(): WeeklyTask[] {
     return [...this.weeklyTasks];
   }
   
-  // Verifica se uma tarefa do Everhour já está na lista semanal
+  // Check if an Everhour task is already in the weekly list
   public isTaskInWeeklyList(everhourTaskId: string): boolean {
     return this.weeklyTasks.some(task => task.everhourId === everhourTaskId);
   }
@@ -55,7 +55,7 @@ export class WeeklyTaskManager {
     return this.weeklyTasks.find(task => task.everhourId === everhourTaskId);
   }
   
-  // Limpa todas as tarefas da semana
+  // Clear all weekly tasks
   public clearAllTasks(): void {
     this.weeklyTasks = [];
     this.saveTasks();

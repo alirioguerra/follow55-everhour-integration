@@ -1,4 +1,4 @@
-// 3. TimesheetMessageHandler.ts (Handler de mensagens)
+// Message handler for the timesheet view
 import * as vscode from 'vscode';
 import { EverhourAPI } from '../utils/api';
 import { WeeklyTaskManager } from './WeeklyTaskManager';
@@ -55,7 +55,7 @@ export class TimesheetMessageHandler {
   }
   
   private async handleRefresh() {
-    // Implementar refresh logic
+    // Implement refresh logic
     this.updateViewCallback();
   }
   

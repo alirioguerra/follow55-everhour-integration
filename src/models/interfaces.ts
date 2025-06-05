@@ -24,10 +24,10 @@ export interface EverhourTask {
 }
 
 export interface WeeklyTask {
-  id: string; // ID interno para gerenciamento
-  everhourId: string; // ID da tarefa no Everhour
+  id: string; // Internal management ID
+  everhourId: string; // Everhour task ID
   name: string;
   createdAt?: number;
-  originalTask?: EverhourTask; // Dados completos da tarefa original
+  originalTask?: EverhourTask; // Complete original task data
   pinned?: boolean; // Whether the task is pinned or not
 }
