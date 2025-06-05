@@ -44,31 +44,38 @@ export class TimesheetHtmlGenerator {
     <style>${data.styles}</style>
   </head>
   <body>
-    <div class="header">
-      <div class="project-selector">
-      ${this.generateRecentProjectsHtml()}
-        <select id="projectSelect" onchange="selectProject(this.value)" aria-label="Select project">
-          ${data.projectsHtml}
-        </select>
+    <div id="loadingContainer" class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading Everhour data...</div>
+    </div>
+
+    <div id="mainContent">
+      <div class="header">
+        <div class="project-selector">
+          ${this.generateRecentProjectsHtml()}
+          <select id="projectSelect" onchange="selectProject(this.value)" aria-label="Select project">
+            ${data.projectsHtml}
+          </select>
+        </div>
+        <input type="search" id="taskSearch" 
+             placeholder="Search tasks..." 
+             value="${data.searchTerm}"
+             oninput="onSearchInput(this.value)"
+             aria-label="Search tasks"/>
       </div>
-      <input type="search" id="taskSearch" 
-           placeholder="Search tasks..." 
-           value="${data.searchTerm}"
-           oninput="onSearchInput(this.value)"
-           aria-label="Search tasks"/>
+      
+      ${data.weeklyTasksHtml}
+      
+      <div class="tasks-header">
+        <h2>Tasks in ${this.escapeHtml(
+          this.state.projects.find(p => p.id === this.state.selectedProjectId)?.name || 'Project'
+        )}</h2>
+        <p class="task-count" role="status">
+          ${this.state.filteredTasks.length} task${this.state.filteredTasks.length !== 1 ? 's' : ''}
+        </p>
+      </div>
+      <div id="tasks" role="list">${data.tasksHtml}</div>
     </div>
-    
-    ${data.weeklyTasksHtml}
-    
-    <div class="tasks-header">
-      <h2>Tasks in ${this.escapeHtml(
-        this.state.projects.find(p => p.id === this.state.selectedProjectId)?.name || 'Project'
-      )}</h2>
-      <p class="task-count" role="status">
-        ${this.state.filteredTasks.length} task${this.state.filteredTasks.length !== 1 ? 's' : ''}
-      </p>
-    </div>
-    <div id="tasks" role="list">${data.tasksHtml}</div>
 
     <!-- Custom confirmation modal -->
     <div id="confirmModal" class="modal" style="display: none;">
@@ -84,7 +91,18 @@ export class TimesheetHtmlGenerator {
       </div>
     </div>
     
-    <script>${data.scripts}</script>
+    <script>
+    // Add this at the beginning of your script
+    window.addEventListener('load', () => {
+      // Hide loading spinner after a small delay to ensure everything is rendered
+      setTimeout(() => {
+        document.getElementById('loadingContainer').classList.add('hidden');
+        document.getElementById('mainContent').style.visibility = 'visible';
+      }, 500);
+    });
+
+    ${data.scripts}
+    </script>
   </body>
   </html>`;
   }
