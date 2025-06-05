@@ -29,4 +29,5 @@ export interface WeeklyTask {
   name: string;
   createdAt?: number;
   originalTask?: EverhourTask; // Dados completos da tarefa original
+  pinned?: boolean; // Whether the task is pinned or not
 }

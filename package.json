@@ -35,18 +35,17 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "everhour",
+          "id": "follow55-everhour",
           "title": "Everhour",
           "icon": "resources/everhour.svg"
         }
       ]
     },
     "views": {
-      "everhour": [
+      "follow55-everhour": [
         {
           "type": "webview",
-          "icon": "resources/everhour.svg",
-          "id": "everhour.timesheetView",
+          "id": "follow55-everhour.timesheetView",
           "name": "Tarefas"
         }
       ]

@@ -1,118 +1,128 @@
 // 1. TimesheetViewProvider.ts (Main provider - coordenador)
 import * as vscode from 'vscode';
-import { EverhourAPI } from '../utils/api';
-import { WeeklyTaskManager } from './WeeklyTaskManager';
 import { TimesheetState } from './TimesheetState';
 import { TimesheetHtmlGenerator } from './TimesheetHtmlGenerator';
 import { TimesheetMessageHandler } from './TimesheetMessageHandler';
+import { WeeklyTaskManager } from './WeeklyTaskManager';
+import { EverhourAPI } from '../utils/api';
 
 export class TimesheetViewProvider implements vscode.WebviewViewProvider {
-  public static readonly viewType = 'everhour.timesheetView';
+  public static readonly viewType = 'follow55-everhour.timesheetView';
+  
   private _view?: vscode.WebviewView;
+  private readonly _extensionUri: vscode.Uri;
+  private readonly _context: vscode.ExtensionContext;
+  private readonly _api: EverhourAPI;
+  private _htmlGenerator?: TimesheetHtmlGenerator;
   
-  private state: TimesheetState;
-  private api: EverhourAPI;
-  private weeklyTaskManager: WeeklyTaskManager;
-  private htmlGenerator: TimesheetHtmlGenerator;
-  private messageHandler: TimesheetMessageHandler;
+  // Make these public read-only
+  public readonly state: TimesheetState;
+  public readonly weeklyTaskManager: WeeklyTaskManager;
+  public readonly messageHandler: TimesheetMessageHandler;
   
-  constructor(private readonly context: vscode.ExtensionContext) {
-    this.api = new EverhourAPI(context);
+  // Add event emitter for task changes
+  private readonly _onTasksChanged = new vscode.EventEmitter<void>();
+  public readonly onTasksChanged = this._onTasksChanged.event;
+  
+  constructor(context: vscode.ExtensionContext) {
+    this._context = context;
+    this._extensionUri = context.extensionUri;
+    
+    // Initialize managers and state
+    this._api = new EverhourAPI(context);
     this.weeklyTaskManager = new WeeklyTaskManager(context);
     this.state = new TimesheetState(this.weeklyTaskManager);
-    this.htmlGenerator = new TimesheetHtmlGenerator(
-      this.weeklyTaskManager,
-      this.state,
-      // Adicionamos os novos parâmetros
-      this._view?.webview || null as any, // Temporário, será definido em resolveWebviewView
-      this.context
-    );
+    
     this.messageHandler = new TimesheetMessageHandler(
-      this.api,
+      this._api,
       this.weeklyTaskManager,
       this.state,
       () => this.updateView()
     );
   }
   
-  public async resolveWebviewView(webviewView: vscode.WebviewView) {
+  public resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken,
+  ) {
+    console.log('Resolving webview view');
     this._view = webviewView;
     
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [this.context.extensionUri]
+      localResourceRoots: [this._extensionUri]
     };
     
-    // Atualizamos o htmlGenerator com a webview correta
-    this.htmlGenerator = new TimesheetHtmlGenerator(
+    // Create the HTML generator with the webview
+    this._htmlGenerator = new TimesheetHtmlGenerator(
       this.weeklyTaskManager,
       this.state,
       webviewView.webview,
-      this.context
+      this._context
     );
     
-    webviewView.webview.html = this.htmlGenerator.generateHtml();
-    
+    this.updateView();
+
+    // Set up message handling
     webviewView.webview.onDidReceiveMessage(async message => {
+      console.log('Received message:', message);
       await this.messageHandler.handleMessage(message);
     });
-    
-    await this.loadInitialData();
+
+    // Load initial data
+    this.loadInitialData();
   }
   
   private async loadInitialData() {
     try {
-      const projects = await this.api.fetchProjects();
+      console.log('Loading initial data');
+      const projects = await this._api.fetchProjects();
+      console.log('Fetched projects:', projects);
       this.state.setProjects(projects);
       
-      if (projects.length > 0 && !this.state.selectedProjectId) {
-        await this.selectProject(projects[0].id);
+      if (projects.length > 0) {
+        await this.fetchTasks(projects[0].id);
       }
       
       await this.checkCurrentTimer();
-      this.updateView(); // Garantir que a view seja atualizada após carregar dados
     } catch (error) {
-      console.error('Error loading initial data:', error);
-      vscode.window.showErrorMessage(
-        `Failed to load data: ${error instanceof Error ? error.message : String(error)}`
-      );
+      console.error('Failed to load initial data:', error);
     }
-  }
-  
-  private async selectProject(projectId: string) {
-    this.state.setSelectedProject(projectId);
-    await this.fetchTasks(projectId);
   }
   
   private async fetchTasks(projectId: string) {
     try {
-      const data = await this.api.fetchTasks(projectId);
+      console.log('Fetching tasks for project:', projectId);
+      const data = await this._api.fetchTasks(projectId);
+      console.log('Fetched tasks:', data);
       this.state.setTasks(data);
       this.updateView();
     } catch (error) {
-      console.error('Error fetching tasks:', error);
-      vscode.window.showErrorMessage(
-        `Failed to fetch tasks: ${error instanceof Error ? error.message : String(error)}`
-      );
-      this.state.setTasks([]);
-      this.updateView();
+      console.error('Failed to fetch tasks:', error);
+      vscode.window.showErrorMessage('Failed to fetch tasks');
     }
   }
   
   private async checkCurrentTimer() {
     try {
-      const timer = await this.api.checkCurrentTimer();
+      console.log('Checking current timer');
+      const timer = await this._api.checkCurrentTimer();
+      console.log('Current timer:', timer);
       this.state.setCurrentTimer(timer);
       this.updateView();
     } catch (error) {
-      console.error('Error checking current timer:', error);
+      console.error('Failed to check current timer:', error);
     }
   }
   
   public updateView() {
-    if (this._view) {
-      // Chamada simplificada para generateHtml()
-      this._view.webview.html = this.htmlGenerator.generateHtml();
+    if (this._view && this._htmlGenerator) {
+      console.log('Updating view');
+      this._view.webview.html = this._htmlGenerator.generateHtml();
+      this._onTasksChanged.fire(); // Emit event when tasks are updated
+    } else {
+      console.log('Cannot update view - view or HTML generator not initialized');
     }
   }
   

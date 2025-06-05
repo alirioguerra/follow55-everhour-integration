@@ -12,41 +12,44 @@ export class TimesheetMessageHandler {
     private updateViewCallback: () => void
   ) {}
   
-  async handleMessage(message: any) {
+  public async handleMessage(message: any) {
     try {
       switch (message.command) {
-        case 'refresh':
-        await this.handleRefresh();
-        break;
         case 'selectProject':
-        await this.handleSelectProject(message.projectId);
-        break;
+          await this.handleSelectProject(message.projectId);
+          break;
         case 'startTimer':
-        await this.handleStartTimer(message.taskId);
-        break;
+          await this.handleStartTimer(message.taskId);
+          break;
         case 'stopTimer':
-        await this.handleStopTimer();
-        break;
-        case 'logTime':
-        await this.handleLogTime(message.taskId, message.time);
-        break;
-        case 'searchTasks':
-        this.handleSearchTasks(message.query);
-        break;
+          await this.handleStopTimer();
+          break;
         case 'addToWeeklyPlan':
-        await this.handleAddToWeeklyPlan(message.taskId);
-        break;
+          await this.handleAddToWeeklyPlan(message.taskId);
+          break;
         case 'removeFromWeeklyPlan':
-        await this.handleRemoveFromWeeklyPlan(message.taskId);
-        break;
+          await this.handleRemoveFromWeeklyPlan(message.taskId);
+          break;
         case 'clearAllWeeklyTasks':
-        await this.handleClearAllWeeklyTasks();
-        break;
+          await this.handleClearAllWeeklyTasks();
+          break;
+        case 'pinTask':
+          await this.handlePinTask(message.taskId);
+          break;
+        case 'unpinTask':
+          await this.handleUnpinTask(message.taskId);
+          break;
+        case 'searchTasks':
+          this.handleSearchTasks(message.searchTerm);
+          break;
+        case 'refresh':
+          await this.handleRefresh();
+          break;
       }
     } catch (error) {
       console.error('Error handling message:', error);
       vscode.window.showErrorMessage(
-        `Error: ${error instanceof Error ? error.message : String(error)}`
+        `Operation failed: ${error instanceof Error ? error.message : String(error)}`
       );
     }
   }
@@ -150,5 +153,32 @@ export class TimesheetMessageHandler {
     this.weeklyTaskManager.clearAllTasks();
     this.updateViewCallback();
     vscode.window.showInformationMessage('All weekly tasks cleared');
+  }
+
+  private async handlePinTask(taskId: string) {
+    // Get the task name before pinning
+    const task = this.weeklyTaskManager.getWeeklyTasks().find(t => t.id === taskId);
+    const taskName = task?.name || 'Task';
+
+    // Get currently pinned task before pinning
+    const currentlyPinned = this.weeklyTaskManager.getWeeklyTasks().find(t => t.pinned);
+    
+    this.weeklyTaskManager.pinTask(taskId);
+    this.updateViewCallback();
+
+    if (currentlyPinned) {
+      vscode.window.showInformationMessage(`Unpinned "${currentlyPinned.name}" and pinned "${taskName}"`);
+    } else {
+      vscode.window.showInformationMessage(`Task "${taskName}" pinned`);
+    }
+  }
+
+  private async handleUnpinTask(taskId: string) {
+    const task = this.weeklyTaskManager.getWeeklyTasks().find(t => t.id === taskId);
+    const taskName = task?.name || 'Task';
+
+    this.weeklyTaskManager.unpinTask(taskId);
+    this.updateViewCallback();
+    vscode.window.showInformationMessage(`Task "${taskName}" unpinned`);
   }
 }

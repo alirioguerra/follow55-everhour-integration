@@ -2,8 +2,9 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   color: var(--vscode-foreground);
   background-color: var(--vscode-editor-background);
-  margin: 0;
+  margin: 8px;
   padding: 8px;
+  margin-bottom: 60px;
 }
 .header {
   display: flex;
@@ -260,4 +261,77 @@ button {
 
 .btn-secondary:hover {
   background: var(--vscode-button-secondaryHoverBackground);
+}
+
+/* Pin button styles */
+.pin-button {
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  color: var(--vscode-foreground);
+  opacity: 0.6;
+}
+
+.pin-button:hover {
+  opacity: 1;
+  background-color: var(--vscode-editor-selectionBackground);
+}
+
+.pin-button.pinned {
+  color: var(--vscode-button-background);
+  opacity: 1;
+}
+
+/* Pinned tasks bar */
+.pinned-tasks-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--vscode-sideBar-background);
+  border-top: 1px solid var(--vscode-panel-border);
+  padding: 8px;
+  z-index: 1000;
+}
+
+.pinned-tasks-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.pinned-task {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background-color: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.pinned-task.running {
+  background-color: var(--vscode-editor-selectionHighlightBackground);
+  border-left: 3px solid var(--vscode-button-background);
+}
+
+.pinned-task-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9em;
+}
+
+.pinned-task-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }

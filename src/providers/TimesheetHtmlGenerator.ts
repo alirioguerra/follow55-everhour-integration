@@ -68,7 +68,7 @@ export class TimesheetHtmlGenerator {
     </div>
     <div id="tasks" role="list">${data.tasksHtml}</div>
 
-     <!-- Custom confirmation modal -->
+    <!-- Custom confirmation modal -->
     <div id="confirmModal" class="modal" style="display: none;">
       <div class="modal-content">
         <div class="modal-header">Confirm Action</div>
@@ -192,6 +192,20 @@ export class TimesheetHtmlGenerator {
         title: 'Start timer'
       });
       
+      const pinButton = task.pinned
+        ? this.createButton({
+          onClick: `unpinTask('${task.id}')`,
+          icon: '<path d="M17 4v7l2 3v2h-6v5l-1 1-1-1v-5H5v-2l2-3V4c0-1.1.9-2 2-2h6c1.1 0 2 .9 2 2z"/>',
+          class: 'pin-button pinned',
+          title: 'Unpin task'
+        })
+        : this.createButton({
+          onClick: `pinTask('${task.id}')`,
+          icon: '<path d="M17 4v7l2 3v2h-6v5l-1 1-1-1v-5H5v-2l2-3V4c0-1.1.9-2 2-2h6c1.1 0 2 .9 2 2zM9 4v7.75L7 15h10l-2-3.25V4H9z"/>',
+          class: 'pin-button',
+          title: 'Pin task'
+        });
+      
       // Get the most up-to-date time from the original task if available
       const baseTime = task.originalTask?.time?.total || 0;
       const elapsedTime = isRunning && this.state.currentTimer.startTime 
@@ -208,6 +222,7 @@ export class TimesheetHtmlGenerator {
           <div class="weekly-task-content">
             <div class="weekly-task-name">${this.escapeHtml(task.name)}</div>
             <div class="weekly-task-actions">
+              ${pinButton}
               ${this.createButton({
                 onClick: `removeFromWeeklyPlan('${task.everhourId}')`,
                 icon: '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>',
@@ -325,11 +340,7 @@ export class TimesheetHtmlGenerator {
         }
         
         function startTimer(taskId) {
-          // Só adiciona à weekly se não estiver
-          if (!isTaskInWeeklyPlan(taskId)) {
-            addToWeeklyPlan(taskId);
-          }
-          vscode.postMessage({ command: 'startTimer', taskId, autoAddToWeekly: true });
+          vscode.postMessage({ command: 'startTimer', taskId });
         }
         
         function stopTimer() {
@@ -344,8 +355,15 @@ export class TimesheetHtmlGenerator {
           vscode.postMessage({ command: 'removeFromWeeklyPlan', taskId });
         }
         
-       
-         function showClearAllConfirmation() {
+        function pinTask(taskId) {
+          vscode.postMessage({ command: 'pinTask', taskId });
+        }
+        
+        function unpinTask(taskId) {
+          vscode.postMessage({ command: 'unpinTask', taskId });
+        }
+        
+        function showClearAllConfirmation() {
           showConfirmModal('Are you sure you want to clear all weekly tasks?', () => {
             vscode.postMessage({ command: 'clearAllWeeklyTasks' });
           });

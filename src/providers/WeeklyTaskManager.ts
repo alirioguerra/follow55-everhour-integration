@@ -61,6 +61,36 @@ export class WeeklyTaskManager {
     this.saveTasks();
   }
   
+  // Pin a task
+  public pinTask(taskId: string): void {
+    // First unpin any currently pinned task
+    const currentlyPinned = this.weeklyTasks.find(t => t.pinned);
+    if (currentlyPinned) {
+      currentlyPinned.pinned = false;
+    }
+
+    // Then pin the new task
+    const task = this.weeklyTasks.find(t => t.id === taskId);
+    if (task) {
+      task.pinned = true;
+      this.saveTasks();
+    }
+  }
+  
+  // Unpin a task
+  public unpinTask(taskId: string): void {
+    const task = this.weeklyTasks.find(t => t.id === taskId);
+    if (task) {
+      task.pinned = false;
+      this.saveTasks();
+    }
+  }
+  
+  // Get all pinned tasks
+  public getPinnedTasks(): WeeklyTask[] {
+    return this.weeklyTasks.filter(task => task.pinned);
+  }
+  
   private loadTasks(): void {
     const savedTasks = this.context.globalState.get<WeeklyTask[]>(WeeklyTaskManager.STORAGE_KEY);
     this.weeklyTasks = savedTasks || [];
