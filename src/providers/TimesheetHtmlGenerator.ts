@@ -53,7 +53,6 @@ export class TimesheetHtmlGenerator {
            value="${data.searchTerm}"
            oninput="onSearchInput(this.value)"
            aria-label="Search tasks"/>
-      <button onclick="refresh()" aria-label="Refresh data">Refresh</button>
     </div>
     
     ${data.weeklyTasksHtml}
